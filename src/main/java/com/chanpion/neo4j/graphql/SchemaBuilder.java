@@ -1,11 +1,18 @@
 package com.chanpion.neo4j.graphql;
 
+import graphql.language.TypeDefinition;
+import graphql.schema.GraphQLScalarType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author April Chen
@@ -23,6 +30,20 @@ public class SchemaBuilder {
         TypeDefinitionRegistry enhancedRegistry = typeDefinitionRegistry.merge(getNeo4jEnhancements());
         ensureRootQueryTypeExists(enhancedRegistry);
         RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring();
+        typeDefinitionRegistry.scalars().forEach((name, definition) -> {
+            GraphQLScalarType scalar;
+            if ("DynamicProperties".equals(name)) {
+                scalar = DynamicProperties.INSTANCE;
+            } else {
+                scalar = GraphQLScalarType.newScalar()
+                        .name(name)
+                        .description(definition.getDescription() != null ? definition.getDescription().getContent() : "Scalar " + name)
+                        .withDirectives( * definition.directives.filterIsInstance < GraphQLDirective > ().toTypedArray())
+                        .definition(definition)
+//                        .coercing(NoOpCoercing)
+                        .build();
+            }
+        });
         return null;
     }
 

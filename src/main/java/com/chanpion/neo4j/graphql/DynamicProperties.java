@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @date 2021/3/24 16:20
  */
 public class DynamicProperties {
-    GraphQLScalarType INSTANCE = GraphQLScalarType.newScalar()
+    public static final GraphQLScalarType INSTANCE = GraphQLScalarType.newScalar()
             .name("DynamicProperties")
             .coercing(new Coercing<Object, Object>() {
                 @Override
@@ -32,10 +32,9 @@ public class DynamicProperties {
                     return parse(input, Collections.emptyMap());
                 }
             })
-
             .build();
 
-    private Object parse(Object input, Map<Object, Object> variables) throws CoercingParseLiteralException {
+    private static Object parse(Object input, Map<Object, Object> variables) throws CoercingParseLiteralException {
         if (!(input instanceof Value)) {
             throw new CoercingParseLiteralException("Expected AST type 'StringValue' but was " + input.getClass());
         } else if (input instanceof NullValue) {
