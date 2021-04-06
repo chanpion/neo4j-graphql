@@ -42,4 +42,8 @@ public class Neo4jTypes {
             this.inputDefinition = inputDefinition;
         }
     }
+
+    public static class Neo4jConverter {
+
+    }
 }

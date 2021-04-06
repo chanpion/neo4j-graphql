@@ -1,6 +1,8 @@
 package com.chanpion.neo4j.graphql;
 
+import graphql.language.Directive;
 import graphql.language.TypeDefinition;
+import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLScalarType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
@@ -12,7 +14,9 @@ import org.apache.commons.io.IOUtils;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * @author April Chen
@@ -38,6 +42,12 @@ public class SchemaBuilder {
                 scalar = GraphQLScalarType.newScalar()
                         .name(name)
                         .description(definition.getDescription() != null ? definition.getDescription().getContent() : "Scalar " + name)
+                        .withDirective(definition.getDirectives().stream().filter(new Predicate<Directive>() {
+                            @Override
+                            public boolean test(Directive directive) {
+                                return directive instanceof  GraphQLDirective;
+                            }
+                        }).collect(Collectors.toList()).to)
                         .withDirectives( * definition.directives.filterIsInstance < GraphQLDirective > ().toTypedArray())
                         .definition(definition)
 //                        .coercing(NoOpCoercing)
